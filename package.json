@@ -1,0 +1,26 @@
+{
+  "name": "autoscrobbler",
+  "module": "src/index.ts",
+  "type": "module",
+  "keywords": [
+    "LastFM",
+    "Scrobbles",
+    "Auth"
+  ],
+  "scripts": {
+    "start": "bun run src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@types/md5": "^2.3.5",
+    "axios": "^1.8.4",
+    "chalk": "^5.4.1",
+    "dotenv": "^16.5.0",
+    "md5": "^2.3.0"
+  }
+}
