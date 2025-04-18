@@ -2,6 +2,7 @@ import md5 from "md5";
 import type { Track } from "../interfaces/Config";
 import Logger from "../utils/logger";
 import axios from "axios";
+import { sleep } from "bun";
 
 export default class {
   private readonly _sessionKey: string;
@@ -12,7 +13,7 @@ export default class {
     this._URL = "http://ws.audioscrobbler.com/2.0/?";
   }
 
-  async scrobble(track: Track, timestamp: number): Promise<Boolean> {
+  async scrobble(track: Track, timestamp: number): Promise<boolean> {
     const params = this.createParams(track, timestamp);
 
     try {
@@ -25,12 +26,25 @@ export default class {
             track.album ? ` (${track.album})` : ""
           } by ${track.artist}`
         );
+        return true;
       } else {
-        Logger.warning("Scrobble failed.");
+        Logger.error("Scrobble failed. Response was not accepted.");
+        return false;
       }
-      return true;
     } catch (error: any) {
-      Logger.error(error);
+      Logger.error("Error during scrobble: " + error);
+
+      if (error.response?.status === 429) {
+        Logger.error(
+          "Rate limit exceeded. Waiting 24 hours before next scrobble."
+        );
+        await sleep(24 * 60 * 60 * 1000);
+      } else if (error.response) {
+        Logger.error(
+          `Scrobble request failed with status: ${error.response.status}`
+        );
+      }
+
       return false;
     }
   }
